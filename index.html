@@ -56,7 +56,7 @@ footer{text-align:center;color:#aaa;font-size:12px;padding:24px 20px;border-top:
   <p>Экспортируйте любое дерево MyHeritage в универсальный файл .ged &mdash; своё или чужое</p>
   <div class="bm-wrap">
     <p>&#128071; Перетащите кнопку на панель закладок браузера</p>
-    <a class="bm" id="bm_link" href="#" onclick="return false;">&#127795; MH &rarr; GEDCOM v15</a>
+    <a class="bm" id="bm_link" href="javascript:(function(){var s=document.createElement(&apos;script&apos;);s.src=&apos;https://partyzan50.github.io/mh-gedcom/bookmarklet.js?t=&apos;+Date.now();document.head.appendChild(s);})()" onclick="return false;">&#127795; MH &rarr; GEDCOM v15</a>
     <div class="hint">Панель скрыта? <kbd>Ctrl+Shift+B</kbd> &nbsp;|&nbsp; Mac: <kbd>&#8984;+Shift+B</kbd></div>
   </div>
 </div>
@@ -84,7 +84,6 @@ footer{text-align:center;color:#aaa;font-size:12px;padding:24px 20px;border-top:
     </ul>
   </div>
 
-  <!-- Форумные сниппеты -->
   <div class="forum-box">
     <h2>&#128196; Код для вставки на форум</h2>
     <p style="font-size:13px;color:#555;margin-bottom:12px">
@@ -142,30 +141,24 @@ footer{text-align:center;color:#aaa;font-size:12px;padding:24px 20px;border-top:
 </footer>
 
 <script>
-// Подставляем loader-букмарклет (короткий) в кнопку
-var BM_B64 = 'amF2YXNjcmlwdDooZnVuY3Rpb24oKXt2YXIgcz1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzY3JpcHQnKTtzLnNyYz0naHR0cHM6Ly9wYXJ0eXphbjUwLmdpdGh1Yi5pby9taC1nZWRjb20vYm9va21hcmtsZXQuanM/dD0nK0RhdGUubm93KCk7ZG9jdW1lbnQuaGVhZC5hcHBlbmRDaGlsZChzKTt9KSgp';
-var bm = atob(BM_B64);
-document.getElementById('bm_link').href = bm;
-
+// Генерируем сниппеты
+var bm = document.getElementById('bm_link').getAttribute('href');
 var PAGE_URL = location.href.replace(/\/+$/, '');
 
-// Генерируем сниппеты с актуальным loader-href
+var treeIcon = String.fromCodePoint(0x1F333); // Дерево
+
 var html_snip = '<a href="' + bm + '" '
   + 'style="display:inline-block;padding:9px 22px;background:#01696f;color:#fff;'
   + 'border-radius:7px;font:700 14px sans-serif;text-decoration:none" '
-  + 'onclick="return false;">&#127795; MH → GEDCOM v15</a> '
-  + '&nbsp;<span style="font-size:12px;color:#888">← перетащить на панель закладок</span>';
+  + 'onclick="return false;">' + treeIcon + ' MH &rarr; GEDCOM v15</a> '
+  + '&nbsp;<span style="font-size:12px;color:#888">&larr; перетащить на панель закладок</span>';
 
-var bb_snip = '[url=' + bm + ']&#127795; MH → GEDCOM v15[/url]
-'
-  + '(перетащить ссылку на панель закладок браузера)
-'
+var bb_snip = '[url=' + bm + ']' + treeIcon + ' MH &rarr; GEDCOM v15[/url]\n'
+  + '(перетащить ссылку на панель закладок браузера)\n'
   + 'Или открыть страницу установки: ' + PAGE_URL;
 
-var md_snip = '[&#127795; MH → GEDCOM v15](' + bm + ')  
-'
-  + '*← перетащить на панель закладок*  
-'
+var md_snip = '[' + treeIcon + ' MH &rarr; GEDCOM v15](' + bm + ')  \n'
+  + '*&larr; перетащить на панель закладок*  \n'
   + 'Страница установки: ' + PAGE_URL;
 
 document.getElementById('snip_html').value = html_snip;
