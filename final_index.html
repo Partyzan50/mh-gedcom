@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyHeritage → GEDCOM · Букмарклет</title>
+<meta name="description" content="Букмарклет для экспорта любого дерева MyHeritage в файл GEDCOM (.ged).">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.6 'Segoe UI',system-ui,sans-serif;background:#f7f6f2;color:#1a1a1a;min-height:100vh}
+.hero{background:linear-gradient(135deg,#014d52 0%,#01696f 100%);color:#fff;padding:48px 20px 40px;text-align:center}
+.hero h1{font-size:clamp(22px,5vw,36px);font-weight:800;margin-bottom:8px}
+.hero p{font-size:15px;opacity:.85;max-width:500px;margin:0 auto 24px}
+.badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;margin-bottom:20px}
+.bm-wrap{background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.4);border-radius:12px;padding:24px;max-width:420px;margin:0 auto}
+.bm-wrap p{font-size:13px;opacity:.8;margin-bottom:14px}
+.bm{display:inline-block;padding:13px 32px;background:#fff;color:#01696f;border-radius:8px;font:700 16px sans-serif;text-decoration:none;cursor:grab;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:pulse 2.5s ease-in-out infinite;user-select:none}
+@keyframes pulse{0%,100%{box-shadow:0 4px 16px rgba(0,0,0,.2)}50%{box-shadow:0 4px 28px rgba(0,0,0,.35)}}
+.bm:active{cursor:grabbing}
+.hint{margin-top:10px;font-size:12px;opacity:.65}
+.hint kbd{background:rgba(255,255,255,.25);border-radius:3px;padding:1px 7px;font-family:monospace}
+.w{max-width:720px;margin:0 auto;padding:40px 20px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:28px 0}
+.step{background:#fff;border:1px solid #e0ddd8;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.step .num{width:32px;height:32px;background:#01696f;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 14px sans-serif;margin-bottom:10px}
+.step h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.step p{font-size:13px;color:#7a7974;line-height:1.5}
+.features{background:#fff;border:1px solid #e0ddd8;border-radius:10px;padding:20px 24px;margin-bottom:20px}
+.features h2{font-size:16px;font-weight:700;margin-bottom:12px}
+.features ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.features li{font-size:13px;color:#555;padding-left:20px;position:relative}
+.features li::before{content:"✓";position:absolute;left:0;color:#01696f;font-weight:700}
+.faq{background:#fff;border:1px solid #e0ddd8;border-radius:10px;padding:20px 24px;margin-bottom:20px}
+.faq h2{font-size:16px;font-weight:700;margin-bottom:14px}
+.faq details{margin-bottom:10px}
+.faq summary{cursor:pointer;font-size:14px;font-weight:600;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px}
+.faq summary::before{content:"▶";font-size:10px;color:#01696f;transition:.2s}
+.faq details[open] summary::before{content:"▼"}
+.faq p{font-size:13px;color:#7a7974;padding:6px 0 6px 22px;line-height:1.6}
+.forum-box{background:#f0fafa;border:1px solid #b2d8db;border-radius:10px;padding:18px 20px;margin-bottom:20px}
+.forum-box h2{font-size:15px;font-weight:700;margin-bottom:10px}
+.forum-box textarea{width:100%;font:12px/1.4 'Courier New',monospace;background:#fff;border:1px solid #c0dde0;border-radius:6px;padding:10px;resize:vertical;color:#333}
+.copy-btn{margin-top:8px;padding:7px 18px;background:#01696f;color:#fff;border:none;border-radius:6px;font:600 13px sans-serif;cursor:pointer}
+.copy-btn:active{background:#014d52}
+.version{background:#f0fafa;border:1px solid #c0dde0;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px}
+.version b{color:#01696f}
+footer{text-align:center;color:#aaa;font-size:12px;padding:24px 20px;border-top:1px solid #e0ddd8;margin-top:8px}
+@media(max-width:480px){.features ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">&#127795; v15 &middot; GEDCOM 5.5.1</div>
+  <h1>MyHeritage &rarr; GEDCOM</h1>
+  <p>Экспортируйте любое дерево MyHeritage в универсальный файл .ged &mdash; своё или чужое</p>
+  <div class="bm-wrap">
+    <p>&#128071; Перетащите кнопку на панель закладок браузера</p>
+    <a class="bm" id="bm_link" href="#" onclick="return false;">&#127795; MH &rarr; GEDCOM v15</a>
+    <div class="hint">Панель скрыта? <kbd>Ctrl+Shift+B</kbd> &nbsp;|&nbsp; Mac: <kbd>&#8984;+Shift+B</kbd></div>
+  </div>
+</div>
+
+<div class="w">
+
+  <div class="steps">
+    <div class="step"><div class="num">1</div><h3>Установите закладку</h3><p>Перетащите зелёную кнопку выше на панель закладок.</p></div>
+    <div class="step"><div class="num">2</div><h3>Откройте дерево</h3><p>Зайдите на MyHeritage, откройте страницу любого дерева.</p></div>
+    <div class="step"><div class="num">3</div><h3>Кликните закладку</h3><p>Появится виджет &mdash; начнёт обходить всех персон автоматически.</p></div>
+    <div class="step"><div class="num">4</div><h3>Скачайте GEDCOM</h3><p>Нажмите «Скачать» &mdash; сразу или после паузы. Файл готов.</p></div>
+  </div>
+
+  <div class="features">
+    <h2>Возможности</h2>
+    <ul>
+      <li>Своё и чужое дерево</li>
+      <li>Имена, даты рождения/смерти</li>
+      <li>Семейные связи (супруги, дети)</li>
+      <li>Кнопка паузы и продолжения</li>
+      <li>Скачать в любой момент</li>
+      <li>Защита от блокировки 429</li>
+      <li>Всё в браузере, без серверов</li>
+      <li>GEDCOM 5.5.1 (любая программа)</li>
+    </ul>
+  </div>
+
+  <!-- Форумные сниппеты -->
+  <div class="forum-box">
+    <h2>&#128196; Код для вставки на форум</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">
+      Скопируйте нужный вариант и вставьте в сообщение на форуме.
+      Посетители смогут перетащить кнопку прямо из вашего поста.
+    </p>
+
+    <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">HTML (для форумов с поддержкой HTML)</label>
+    <textarea id="snip_html" rows="5" readonly></textarea>
+    <button class="copy-btn" onclick="copySnip('snip_html', this)">&#128203; Копировать</button>
+
+    <label style="font-size:13px;font-weight:600;display:block;margin:14px 0 4px">BBCode (phpBB, VBulletin и др.)</label>
+    <textarea id="snip_bb" rows="5" readonly></textarea>
+    <button class="copy-btn" onclick="copySnip('snip_bb', this)">&#128203; Копировать</button>
+
+    <label style="font-size:13px;font-weight:600;display:block;margin:14px 0 4px">Markdown (GitHub, Reddit, Telegram)</label>
+    <textarea id="snip_md" rows="4" readonly></textarea>
+    <button class="copy-btn" onclick="copySnip('snip_md', this)">&#128203; Копировать</button>
+  </div>
+
+  <div class="faq">
+    <h2>Частые вопросы</h2>
+    <details>
+      <summary>Работает ли на чужих деревьях?</summary>
+      <p>Да. Букмарклет использует BFS-обход через API родственников &mdash; он доступен для любого дерева, которое вы можете видеть. Персоны &lt;Private&gt; будут в файле, но без имён.</p>
+    </details>
+    <details>
+      <summary>Почему кнопку нельзя просто кликнуть здесь?</summary>
+      <p>Букмарклет должен выполниться на странице MyHeritage, а не здесь &mdash; иначе у него не будет доступа к данным дерева. Именно для этого нужно перетащить его в закладки и кликнуть там.</p>
+    </details>
+    <details>
+      <summary>Что делать если появляется ошибка 429?</summary>
+      <p>Букмарклет автоматически делает паузу 6&ndash;9 секунд и повторяет запрос. Если ошибки продолжаются &mdash; нажмите «Пауза», подождите 2&ndash;3 минуты, затем «Продолжить».</p>
+    </details>
+    <details>
+      <summary>В каких программах открыть .ged файл?</summary>
+      <p>Gramps (бесплатно), Древо Жизни, Family Tree Maker, MacFamilyTree, Ancestris, Legacy Family Tree &mdash; любая программа поддерживающая GEDCOM 5.5.1.</p>
+    </details>
+    <details>
+      <summary>Данные передаются на сервер?</summary>
+      <p>Нет. Весь код работает только в вашем браузере. Запросы идут только к MyHeritage, GEDCOM файл создаётся локально.</p>
+    </details>
+  </div>
+
+  <div class="version">
+    <b>v15</b> &mdash; исправлены русские названия связей («Муж/жена», «Ребёнок», «Родитель»),
+    пауза/продолжение, скачивание в любой момент, даты из <code>lifeSpan</code>.
+  </div>
+
+</div>
+
+<footer>
+  Инструмент для личного генеалогического использования &nbsp;&middot;&nbsp;
+  Данные принадлежат их владельцам
+</footer>
+
+<script>
+// Подставляем loader-букмарклет (короткий) в кнопку
+var BM_B64 = 'amF2YXNjcmlwdDooZnVuY3Rpb24oKXt2YXIgcz1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzY3JpcHQnKTtzLnNyYz0naHR0cHM6Ly9wYXJ0eXphbjUwLmdpdGh1Yi5pby9taC1nZWRjb20vYm9va21hcmtsZXQuanM/dD0nK0RhdGUubm93KCk7ZG9jdW1lbnQuaGVhZC5hcHBlbmRDaGlsZChzKTt9KSgp';
+var bm = atob(BM_B64);
+document.getElementById('bm_link').href = bm;
+
+var PAGE_URL = location.href.replace(/\/+$/, '');
+
+// Генерируем сниппеты с актуальным loader-href
+var html_snip = '<a href="' + bm + '" '
+  + 'style="display:inline-block;padding:9px 22px;background:#01696f;color:#fff;'
+  + 'border-radius:7px;font:700 14px sans-serif;text-decoration:none" '
+  + 'onclick="return false;">&#127795; MH → GEDCOM v15</a> '
+  + '&nbsp;<span style="font-size:12px;color:#888">← перетащить на панель закладок</span>';
+
+var bb_snip = '[url=' + bm + ']&#127795; MH → GEDCOM v15[/url]
+'
+  + '(перетащить ссылку на панель закладок браузера)
+'
+  + 'Или открыть страницу установки: ' + PAGE_URL;
+
+var md_snip = '[&#127795; MH → GEDCOM v15](' + bm + ')  
+'
+  + '*← перетащить на панель закладок*  
+'
+  + 'Страница установки: ' + PAGE_URL;
+
+document.getElementById('snip_html').value = html_snip;
+document.getElementById('snip_bb').value = bb_snip;
+document.getElementById('snip_md').value = md_snip;
+
+function copySnip(id, btn) {
+  var el = document.getElementById(id);
+  el.select();
+  document.execCommand('copy');
+  var orig = btn.textContent;
+  btn.textContent = '✓ Скопировано!';
+  btn.style.background = '#2e7d32';
+  setTimeout(function(){ btn.textContent = orig; btn.style.background = '#01696f'; }, 2000);
+}
+</script>
+</body>
+</html>
